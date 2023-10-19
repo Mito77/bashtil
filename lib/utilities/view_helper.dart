@@ -1,7 +1,8 @@
 
-import 'package:bashtil/ui/home/homePage.dart';
-import 'package:bashtil/ui/home/home_bloc.dart';
+import 'package:bashtil/ui/homePage/homePage.dart';
+import 'package:bashtil/ui/navigator/navigator.dart';
 import 'package:bashtil/ui/signup/signup.dart';
+import 'package:bashtil/ui/welcomePage/welcomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -180,8 +181,15 @@ class ViewHelper {
   }
 
 
+  void openWelcomePageWidget() {
+    pushScreen(WelcomePageWidget());
+  }
+
+  void openMainPageWidget(index) {
+    pushScreen(MainPageWidget(index));
+  }
   void openHomePageWidget() {
-    pushScreen(homePageWidget());
+    pushScreen(HomePageWidget());
   }
   void openSignUpWidget() {
     pushScreen(SignUpWidget());

@@ -8,7 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 Widget appBarCustom(w, h, context,title,route,showBack) {
   return Container(
     width: w,
-    height: h*.07,
+    height: h*.09,
     alignment: Alignment.center,
     color: blackColor,
     child:Padding(

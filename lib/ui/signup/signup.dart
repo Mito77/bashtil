@@ -1,10 +1,12 @@
-
 import 'package:bashtil/ui/signup/signUp_bloc.dart';
 import 'package:bashtil/utilities/CustomText.dart';
 import 'package:bashtil/utilities/CustomTextStyle.dart';
 import 'package:bashtil/utilities/app_colors.dart';
+import 'package:bashtil/utilities/view_helper.dart';
+import 'package:bashtil/widgets/appBarCustome.dart';
 import 'package:bashtil/widgets/custom_button.dart';
 import 'package:bashtil/widgets/custom_text_form_filed.dart';
+import 'package:bashtil/widgets/textStyles.dart';
 import 'package:flutter/services.dart';
 import 'package:bashtil/bases/bloc_base.dart';
 import 'package:bashtil/bases/validator.dart';
@@ -19,13 +21,13 @@ class SignUpWidget extends BaseStatefulWidget {
 }
 
 class _SignUpViewState extends BaseState<SignUpWidget> {
-  var h, w ,regularStyle,boldStyle, startDate = '', endDate = '', day = '',password;
+  var h, w, startDate = '', endDate = '', day = '', password;
 
   final SignUpBloc _bloc = SignUpBloc();
   final Validator _validator = Validator();
   DateTime now = DateTime.now();
   List<DropdownMenuItem<String>> dropdownItems = [];
-List<String> gender =[S.current.male, S.current.female];
+  List<String> gender = [S.current.male, S.current.female];
   String dropdownValue = "${S.current.nationality}";
   List names = [
     S.current.name,
@@ -41,8 +43,6 @@ List<String> gender =[S.current.male, S.current.female];
     super.initState();
 
     _bloc.init();
-    regularStyle = RegularStyle(fontSize: 18.sp, color: blackColor);
-    boldStyle = BoldStyle(color: whiteColor, fontSize: 18.sp);
   }
 
   @override
@@ -57,32 +57,35 @@ List<String> gender =[S.current.male, S.current.female];
     return BlocProvider(child: screenDesign, bloc: _bloc);
   }
 
-  Widget get screenDesign => SingleChildScrollView(
-          child: Container(
-            height: h,
-            alignment: Alignment.center,
-            child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-            // logoWidget(context,true,true,true),
-            emailTextForm(S.current.name),
-            emailTextForm(S.current.emailAddress),
-            passwordTextForm,
-            confPasswordTextForm,
-            emailTextForm(S.current.nationalID),
-            nationalityDropDown,
-            inDate(),
-            signUpButton,
-
-        ],
-      ),
-          ));
+  Widget get screenDesign => Container(
+        height: h,
+        child: SingleChildScrollView(
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      appBarCustom(w, h, context, "تسجيل", () {
+        ViewHelper(context).openWelcomePageWidget();
+      }, true),
+      emailTextForm(S.current.name),
+      emailTextForm(S.current.emailAddress),
+      passwordTextForm,
+      confPasswordTextForm,
+      emailTextForm(S.current.nationalID),
+      nationalityDropDown,
+      inDate(),
+      signUpButton,
+    ],
+  ),
+        ),
+      );
 
   StreamBuilder<String> emailTextForm(name) => StreamBuilder(
         builder: (context, snapshot) => Padding(
           padding: EdgeInsets.only(left: w * .04, right: w * .04, top: h * .03),
           child: CustomTextFormFiled(
+            customContentPadding: EdgeInsets.only(
+                left: w * .01, right: w * .01, top: h * .01, bottom: h * .01),
             labelText: name,
             onChanged: (value) {
               _bloc.updateEmail(value);
@@ -96,6 +99,7 @@ List<String> gender =[S.current.male, S.current.female];
         ),
         stream: _bloc.email,
       );
+
   StreamBuilder<String> inDate() {
     return StreamBuilder(
       builder: (context, snapshot) => Padding(
@@ -108,8 +112,8 @@ List<String> gender =[S.current.male, S.current.female];
               border: Border.all(color: greyColor),
             ),
             height: h * .07,
-            padding: EdgeInsetsDirectional.only(
-                top: h * .02, start: w * .02, end: w * .02, bottom: h * .02),
+            padding: EdgeInsets.only(
+                left: w * .03, right: w * .03, top: h * .01, bottom: h * .01),
             child: Theme(
               data: Theme.of(context).copyWith(
                 colorScheme: ColorScheme.light(
@@ -124,8 +128,7 @@ List<String> gender =[S.current.male, S.current.female];
                 builder: (context) => InkWell(
                   child: Row(children: <Widget>[
                     CustomText(
-                      customTextStyle:
-                      boldStyle,
+                      customTextStyle: boldTextStyle(18.sp, loginText),
                       text: '${S.of(context).birthDay} : $startDate',
                     ),
                     Spacer(),
@@ -135,22 +138,25 @@ List<String> gender =[S.current.male, S.current.female];
                     )
                   ]),
                   onTap: () => showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now().subtract(Duration(days: 9999999)),
-                      lastDate: DateTime.now().add(Duration(days: 99999999999)))
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate:
+                              DateTime.now().subtract(Duration(days: 9999999)),
+                          lastDate:
+                              DateTime.now().add(Duration(days: 99999999999)))
                       .then((value) {
                     setState(() {
                       startDate = '${value!.year}-${value.month}-${value.day}';
                     });
-
                   }),
                 ),
               ),
             )),
-      ), stream: null,
+      ),
+      stream: null,
     );
   }
+
   StreamBuilder<bool> get confPasswordTextForm => StreamBuilder<bool>(
         builder: (context, snapshot) => cnofPasswordStream(snapshot.data!),
         initialData: false,
@@ -158,61 +164,61 @@ List<String> gender =[S.current.male, S.current.female];
       );
 
   Widget get nationalityDropDown => StreamBuilder(
-    builder: (context, snapshot) => Padding(
-        padding:
-        EdgeInsets.only(left: w * .04, right: w * .04, top: h * .03),
-        child: Container(
-          width: w,
-          height: h * .06,
-          padding: EdgeInsets.only(
-              left: 15.0, right: 15.0, top: 13.0, bottom: 13.0),
-          decoration: BoxDecoration(
-              color: whiteColor,
-              borderRadius: BorderRadius.all(
-                Radius.circular(5.0),
-              ),
-              border: Border.all(color: greyColor)),
-          child: DropdownButton(
-            dropdownColor: whiteColor,
-            underline: Text(''),
-            isExpanded: true,
-            hint: CustomText(
-              text: dropdownValue,
-              customTextStyle:
-              boldStyle,
-            ),
-            icon: Icon(
-              Icons.keyboard_arrow_down,
-              color:greyColor,
-            ),
-            items: <String>["مصر","قطر","السعوديه","الامارات"]
-                .map((String items) {
-              return DropdownMenuItem(
-                value: items,
-                child: CustomText(
-                  text: items,
-                  customTextStyle: boldStyle,
+        builder: (context, snapshot) => Padding(
+            padding:
+                EdgeInsets.only(left: w * .04, right: w * .04, top: h * .03),
+            child: Container(
+              width: w,
+              height: h * .07,
+              padding: EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 13.0, bottom: 13.0),
+              decoration: BoxDecoration(
+                  color: whiteColor,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(5.0),
+                  ),
+                  border: Border.all(color: greyColor)),
+              child: DropdownButton(
+                dropdownColor: whiteColor,
+                underline: Text(''),
+                isExpanded: true,
+                hint: CustomText(
+                  text: dropdownValue,
+                  customTextStyle: boldTextStyle(18.sp, loginText),
                 ),
-              );
-            }).toList(),
-            // After selecting the desired option,it will
-            // change button value to selected value
-            onChanged: (String? newValue) {
-              setState(() {
-                dropdownValue = newValue!;
-
-              });
-            },
-          ),
-        )), stream: null,
-
-  );
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: greyColor,
+                ),
+                items: <String>["مصر", "قطر", "السعوديه", "الامارات"]
+                    .map((String items) {
+                  return DropdownMenuItem(
+                    value: items,
+                    child: CustomText(
+                      text: items,
+                      customTextStyle: boldTextStyle(18.sp, loginText),
+                    ),
+                  );
+                }).toList(),
+                // After selecting the desired option,it will
+                // change button value to selected value
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  });
+                },
+              ),
+            )),
+        stream: null,
+      );
 
   StreamBuilder<String> cnofPasswordStream(bool showPassword) =>
       StreamBuilder<String>(
         builder: (context, snapshot) => Padding(
           padding: EdgeInsets.only(left: w * .04, right: w * .04, top: h * .03),
           child: CustomTextFormFiled(
+            customContentPadding: EdgeInsets.only(
+                left: w * .01, right: w * .01, top: h * .01, bottom: h * .01),
             onChanged: (value) {
               _bloc.updatePassword(value);
               password = value;
@@ -222,13 +228,13 @@ List<String> gender =[S.current.male, S.current.female];
             updatePasswordToggle: (value) {
               _bloc.passwordVisibilityBehaviour.sink.add(value);
             },
-            borderColor:greyColor,
+            borderColor: greyColor,
             textCapitalization: TextCapitalization.none,
             isPassword: true,
             passwordVisibility: showPassword,
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.done,
-            labelText: "S.of(context).confirmPassword",
+            labelText: S.of(context).confirmPassword,
           ),
         ),
         stream: _bloc.password,
@@ -246,6 +252,8 @@ List<String> gender =[S.current.male, S.current.female];
         builder: (context, snapshot) => Padding(
           padding: EdgeInsets.only(left: w * .04, right: w * .04, top: h * .03),
           child: CustomTextFormFiled(
+            customContentPadding: EdgeInsets.only(
+                left: w * .01, right: w * .01, top: h * .01, bottom: h * .01),
             onChanged: (value) {
               _bloc.updatePassword(value);
               password = value;
@@ -275,7 +283,7 @@ List<String> gender =[S.current.male, S.current.female];
         child: CustomButton(
           idleText: S.of(context).signup,
           buttonColor: blackColor,
-          onTap: (){},
+          onTap: () {},
           textSize: 16.sp,
           buttonBehaviour: _bloc.buttonBehavior,
           failedBehaviour: _bloc.failedBehaviour,
@@ -288,6 +296,4 @@ List<String> gender =[S.current.male, S.current.female];
 
   @override
   Future<bool> willPopBack() async => true;
-
-
 }

@@ -37,11 +37,9 @@ class _MyAppState extends State<MyApp> {
       ChangeNotifierProvider<AppHelper>.value(
           value: AppHelper(),
           child: Consumer<AppHelper>(
-            builder: (context, value, child) => mediaQuery(context),
+            builder: (context, value, child) => materialApp(context),
           ));
 
-  MediaQuery mediaQuery(BuildContext context) =>
-      MediaQuery(data: MediaQueryData(), child: materialApp(context));
 
   MaterialApp materialApp(BuildContext context) => MaterialApp(
     debugShowCheckedModeBanner: false,
